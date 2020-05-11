@@ -1,0 +1,13 @@
+.address-book-container {
+    width: 60%;
+    margin: auto;
+}
+
+.fab {
+
+}
+
+.address-list {
+    width: 80%;
+    margin-left: 20px !important;
+}
