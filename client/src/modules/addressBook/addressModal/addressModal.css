@@ -1,0 +1,22 @@
+.modal-card {
+  width: 30%;
+  margin: 150px auto;
+  padding: 20px;
+}
+
+.form-data {
+  display: block;
+  width: 80%;
+  margin: auto;
+}
+
+.text-field, .select-field {
+  width: 100% !important;
+  margin: 20px auto !important;
+}
+
+.save-btn {
+  display: block;
+  width: fit-content;
+  margin: 20px auto !important;
+}

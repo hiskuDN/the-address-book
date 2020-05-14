@@ -11,3 +11,18 @@
     width: 80%;
     margin-left: 20px !important;
 }
+
+.btns {
+    width: fit-content !important;
+    margin: auto;
+}
+
+.export-json-btn {
+    margin-right: 20px !important;
+    /*background-color: #00acc1 !important;*/
+}
+
+.export-xml-btn {
+    margin-left: 20px !important;
+    /*background-color: #00e676 !important;*/
+}
