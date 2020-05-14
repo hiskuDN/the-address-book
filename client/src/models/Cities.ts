@@ -1,4 +1,4 @@
 export interface Cities {
-  id: string | null,
+  id: string,
   city: string
 }

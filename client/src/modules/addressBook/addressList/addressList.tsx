@@ -3,7 +3,7 @@ import {Avatar, ListItem, ListItemIcon, ListItemText} from "@material-ui/core";
 import AddressModal from "../addressModal/addressModal";
 import {AddressResponse} from "../../../models/AddressResponse";
 import {AddressRequest} from "../../../models/AddressRequest";
-import {createAddress, getAllAddresses} from "../../../services/addressServices";
+import {createAddress, editAddress, getAllAddresses} from "../../../services/addressServices";
 
 interface IAddressListState {
   openModal: boolean,
@@ -33,9 +33,30 @@ class AddressList extends Component<IAddressListProps, IAddressListState> {
 
   handleSave = async (data: AddressRequest) => {
     console.log('handle save')
-    await createAddress(data).then((res: any) => {
-      console.log(res.data)
+    console.log(data)
+    await editAddress(data)
+      .then((res: any) => {
+        console.log(res.data)
+      }).catch((err: any) => {
+        console.log(err)
+      })
+    window.location.reload()
+  }
+
+  handleList = (event:any) => {
+    let innerHTML = event.target.innerHTML
+
+    this.props.data.map((address: AddressResponse, key: number) => {
+      if(innerHTML.includes(address.firstName)) {
+        this.setState({
+          openModal: this.state.openModal,
+          data: address
+        })
+        console.log(address.firstName)
+      }
     })
+    this.handleModal('VIEW')
+
   }
 
   getList = () => {
@@ -44,14 +65,13 @@ class AddressList extends Component<IAddressListProps, IAddressListState> {
       itemList.push(
         <ListItem
           button
-          onClick={() => {
-            this.setState({
-              openModal: this.state.openModal,
-              data: address
-            })
-            this.handleModal('VIEW')
+          key={key}
+          id={address.id + ''}
+          onClick={(event:any) => {
+            this.handleList(event)
           }}
-          key={key}>
+        >
+
           <ListItemIcon>
             <Avatar>
               {address.firstName[0] + address.lastName[0]}

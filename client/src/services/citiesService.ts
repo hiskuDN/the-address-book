@@ -1,4 +1,4 @@
-import Axios from "axios";
+import Axios, {AxiosResponse} from "axios";
 import {baseURL, server_url} from "../_dbconfig/routes";
 
 export function getCities() {

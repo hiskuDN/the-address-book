@@ -8,6 +8,7 @@ import AddressModal from "./addressModal/addressModal";
 import {createAddress, getAllAddresses} from "../../services/addressServices";
 import {AddressResponse} from "../../models/AddressResponse";
 import {AddressRequest} from "../../models/AddressRequest";
+import {exportJSON, exportXML} from "../../services/exportService";
 
 interface IAddressListState {
   openModal: boolean,
@@ -30,6 +31,8 @@ class AddressBook extends Component <IAddressListProps, IAddressListState> {
     super(props);
 
     this.handleModal = this.handleModal.bind(this)
+    this.handleXML = this.handleXML.bind(this)
+    this.handleJSON = this.handleJSON.bind(this)
   }
 
   async componentWillMount() {
@@ -39,6 +42,14 @@ class AddressBook extends Component <IAddressListProps, IAddressListState> {
         loading: false
       })
     })
+  }
+
+  handleXML() {
+    exportXML()
+  }
+
+  handleJSON() {
+    exportJSON()
   }
 
   handleModal = (status: string) => {
@@ -55,6 +66,7 @@ class AddressBook extends Component <IAddressListProps, IAddressListState> {
       }).catch((err: any) => {
         console.log(err)
       })
+    window.location.reload()
   }
 
   render() {
@@ -79,14 +91,16 @@ class AddressBook extends Component <IAddressListProps, IAddressListState> {
                 <Button
                   className={'export-json-btn'}
                   variant={'contained'}
+                  onClick={this.handleXML}
                 >
-                  Export to JSON
+                  Export to XML
                 </Button>
                 <Button
                   className={'export-xml-btn'}
                   variant={'contained'}
+                  onClick={this.handleJSON}
                 >
-                  Export to XML
+                  Export to JSON
                 </Button>
               </div>
             </div>

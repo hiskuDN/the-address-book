@@ -1,11 +1,8 @@
 import React, {ReactComponentElement} from 'react';
 import './addressModal.css'
 import {
-  Avatar,
   Button,
   Card,
-  ListItem,
-  ListItemIcon, ListItemText,
   MenuItem,
   Modal,
   Select,
@@ -15,6 +12,7 @@ import {
 import {AddressResponse} from "../../../models/AddressResponse";
 import {AddressRequest} from "../../../models/AddressRequest";
 import {getCities} from "../../../services/citiesService";
+import {Cities} from "../../../models/Cities";
 
 interface IAddressModalProps {
   addressStatus: 'EDIT' | 'CREATE' | 'VIEW',
@@ -30,12 +28,14 @@ interface CityType {
 }
 
 function AddressModal(props: IAddressModalProps) {
+  // let cityList:Cities[] = []
   const [status, setStatus] = React.useState(props.addressStatus)
   const [enabled, setEnabled] = React.useState(status == 'EDIT' || status == 'CREATE')
-  const [cityList, setCityList] = React.useState<CityType[]>([])
+  const [cityList] = React.useState<Cities[]>([])
   const [loading, setLoading] = React.useState<boolean>(true)
 
   //Input items
+  const [id, setId] = React.useState();
   const [firstName, setFirstName] = React.useState();
   const [lastName, setLastName] = React.useState();
   const [email, setEmail] = React.useState();
@@ -44,36 +44,38 @@ function AddressModal(props: IAddressModalProps) {
   const [city, setCity] = React.useState<string>('none');
 
   React.useEffect(() => {
-    cityListHandler().then(() => {
-      if (props.data != null) {
-        setFirstName(props.data.firstName)
-        setLastName(props.data.lastName)
-        setEmail(props.data.email)
-        setStreet(props.data.street)
-        setZip(props.data.zipCode)
-        cityList.map((data: CityType ) => {
-          //@ts-ignore
-          if(data.id == props.data.city) {
-            setCity(data.id)
-          }
-        })
-      }
+    cityListHandler()
+    if (props.data != null) {
+      setId(props.data.id)
+      setFirstName(props.data.firstName)
+      setLastName(props.data.lastName)
+      setEmail(props.data.email)
+      setStreet(props.data.street)
+      setZip(props.data.zipCode)
+      cityList.map((data: CityType ) => {
+        //@ts-ignore
+        if(data.id == props.data.city) {
+          setCity(data.id)
+        }
+      })
       setLoading(false)
-    })
-  })
+    }
+    else if(props.data == null && status == 'CREATE')
+      setLoading(false)
+  }, [props])
 
   const cityListHandler = async () => {
-    let tempList: CityType[] = []
     await getCities()
       .then((response: any) => {
-        response.data.map((data: any) => {
-          tempList.push({id: data.id, city: data.city})
-        })
+        if(cityList.length == 0)
+          response.data.map((data: any) => {
+            cityList.push({id: data.id, city: data.city})
+          })
       })
-      .catch((err:any) => {
+      .catch((err: any) => {
         console.log(err)
       })
-    setCityList(tempList)
+
   }
 
   const getCityList = () => {
@@ -88,7 +90,6 @@ function AddressModal(props: IAddressModalProps) {
         </MenuItem>
       )
     })
-
     return itemList
   }
 
@@ -120,9 +121,8 @@ function AddressModal(props: IAddressModalProps) {
           <TextField
             className={'text-field'}
             variant={'outlined'}
-            placeholder={'First Name'}
+            placeholder={firstName || 'First Name'}
             disabled={!enabled}
-            value={firstName}
             onChange={(event: any) => {
               setFirstName(event.target.value)
             }}
@@ -132,9 +132,8 @@ function AddressModal(props: IAddressModalProps) {
           <TextField
             className={'text-field'}
             variant={'outlined'}
-            placeholder={'Last Name'}
+            placeholder={lastName || 'Last Name'}
             disabled={!enabled}
-            value={lastName}
             onChange={(event: any) => {
               setLastName(event.target.value)
             }}
@@ -145,9 +144,8 @@ function AddressModal(props: IAddressModalProps) {
             variant={'outlined'}
             className={'text-field'}
             type={'email'}
-            placeholder={'Email'}
+            placeholder={email || 'Email'}
             disabled={!enabled}
-            value={email}
             onChange={(event: any) => {
               setEmail(event.target.value)
             }}
@@ -157,9 +155,8 @@ function AddressModal(props: IAddressModalProps) {
           <TextField
             variant={'outlined'}
             className={'text-field'}
-            placeholder={'Street'}
+            placeholder={street || 'Street'}
             disabled={!enabled}
-            value={street}
             onChange={(event: any) => {
               setStreet(event.target.value)
             }}
@@ -169,9 +166,8 @@ function AddressModal(props: IAddressModalProps) {
           <TextField
             variant={'outlined'}
             className={'text-field'}
-            placeholder={'Zip-Code'}
+            placeholder={zip || 'Zip-Code'}
             disabled={!enabled}
-            value={zip}
             onChange={(event: any) => {
               setZip(event.target.value)
             }}
@@ -179,8 +175,7 @@ function AddressModal(props: IAddressModalProps) {
             Zip-Code
           </TextField>
           <Select
-            value={city}
-            defaultValue={'none'}
+            defaultValue={city || 'none'}
             className={'select-field'}
             onChange={handleChange}
             fullWidth
@@ -202,6 +197,7 @@ function AddressModal(props: IAddressModalProps) {
                 fullWidth
                 onClick={() => {
                   props.handleSave({
+                    id: id,
                     firstName: firstName,
                     lastName: lastName,
                     email: email,
@@ -228,7 +224,7 @@ function AddressModal(props: IAddressModalProps) {
         </div>
       </Card>
     </Modal>
-  :
+    :
     null
 }
 

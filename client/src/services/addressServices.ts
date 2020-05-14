@@ -21,7 +21,6 @@ export async function createAddress(data: AddressRequest) {
     {
       baseURL: baseURL,
       headers: {'Access-Control-Allow-Origin': '*', 'content-type': 'application/x-www-form-urlencoded format'},
-
     }
   )
     .then((response) => {
@@ -32,14 +31,19 @@ export async function createAddress(data: AddressRequest) {
     })
 }
 
-export async function editAddress() {
-
-}
-
-export async function convertToJSON() {
-
-}
-
-export async function convertToXML() {
-
+export async function editAddress(data: AddressRequest) {
+  await Axios.put(
+    server_url + 'server/api/controllers/address.php',
+    data,
+    {
+      baseURL: baseURL,
+      headers: {'Access-Control-Allow-Origin': '*', 'content-type': 'application/x-www-form-urlencoded format'},
+    }
+  )
+    .then((response) => {
+      return response.data
+    })
+    .catch((err: any) => {
+      return err
+    })
 }

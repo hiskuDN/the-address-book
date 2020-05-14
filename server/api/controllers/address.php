@@ -1,42 +1,35 @@
 <?php
-
-require('./api/_config/db.php');
-
-function getAddress($id) {
-  $query = "SELECT * FROM address WHERE id == {$id}";
-  $result = queryToSql($query);
-
-  while($row = $result -> fetch_assoc()) {
-    echo $row;
-  }
-}
+include '../models/AddressModel.php';
+include './helper.php';
 
 function getAllAddresses() {
 //  Get all addresses from the database
   $query = "SELECT * FROM address";
   $result = queryToSql($query);
-  $json_temp = new AddressModel();
+  $json_temp = array();
 
-  while($row = $result -> fetch_assoc()) {
-    $json_temp -> $firstName = $row[0];
-    $json_temp -> lastName = $row[1];
-    $json_temp -> email = $row[3];
-    $json_temp -> street = $row[4];
-    $json_temp -> zipCode = $row[5];
-    $json_temp -> city = $row[1];
+  if($result != null) {
+    while ($row = $result->fetch_assoc()) {
+      $temp = new AddressModel();
+      $temp->id = $row['id'];
+      $temp->firstName = $row['first_name'];
+      $temp->lastName = $row['last_name'];
+      $temp->email = $row['email'];
+      $temp->street = $row['street'];
+      $temp->zipCode = $row['zip_code'];
+      $temp->city = $row['city_id'];
+      array_push($json_temp, $temp);
+    }
+    echo json_encode($json_temp);
   }
-
-  echo $json_temp;
+  else
+    echo 'Not found';
 }
 
-function getCities() {
-//  Get all cities from the database
-  $query = 'SELECT *  FROM cities';
-  $result = queryToSql($query);
-}
+function createAddress() {
+//   Create Address
+  $_POST = json_decode(file_get_contents("php://input"),true);
 
-function createAddress($id, $first_name, $last_name, $email, $street, $zip_code, $city_id) {
-//    TODO finish the query here
   $id = 0;
   $first_name = $_POST['firstName'];
   $last_name = $_POST['lastName'];
@@ -45,40 +38,29 @@ function createAddress($id, $first_name, $last_name, $email, $street, $zip_code,
   $zip_code = $_POST['zipCode'];
   $city_id = $_POST['city'];
 
-  $query = "INSERT into address (id, first_name, last_name, email, street, zip_code, city_id) 
-    VALUES ({$id}, {$first_name}, {$last_name}, {$email_name} , {$street},{$zip_code},{$city_id})";
+  $query = "INSERT into address (id, first_name, last_name, email, street, zip_code, city_id)
+    VALUES ('{$id}', '{$first_name}', '{$last_name}', '{$email_name}' , '{$street}','{$zip_code}','{$city_id}')";
   $result = queryToSql($query);
-
-  return queryToSql($query);
+  echo $result;
+//  return queryToSql($query);
 }
 
 function editAddress() {
 //  Edit an address
+  $_POST = json_decode(file_get_contents("php://input"),true);
+
+  $queryDelete = "DELETE FROM address where id= {$_POST['id']}";
+  queryToSql($queryDelete);
+  createAddress();
   return 'edit Address';
-
 }
 
-function deleteAddress($id) {
-//  Delete an address
-  return 'delete address';
-}
 
-function queryToSql($query) {
-//  Query the sql database
-  global $config;
-  return $config -> query($query);
-}
-
-function Main() {
-  switch ($_SERVER['REQUEST_METHOD'])
-  {
-    case 'GET':
-      return getAllAddresses();
-    case 'PUT':
-      return editAddress();
-    case 'POST':
-      return createAddress();
-    case 'DELETE':
-      return deleteAddress();
-  }
+switch ($_SERVER['REQUEST_METHOD']) {
+  case 'GET':
+    return getAllAddresses();
+  case 'PUT':
+    return editAddress();
+  case 'POST':
+    return createAddress();
 }

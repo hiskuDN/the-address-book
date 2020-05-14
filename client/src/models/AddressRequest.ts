@@ -1,6 +1,5 @@
-import {Cities} from "./Cities";
-
 export interface AddressRequest {
+  id: string,
   firstName: string,
   lastName: string,
   email: string,
